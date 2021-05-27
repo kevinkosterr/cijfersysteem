@@ -1,131 +1,224 @@
 <!DOCTYPE html>
-<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{=T.accepted_language or 'en'}}"> <!--<![endif]-->
-  <head>
-    <meta charset="utf-8">
-    <!-- www.phpied.com/conditional-comments-block-downloads/ -->
-    <!-- Always force latest IE rendering engine
-         (even in intranet) & Chrome Frame
-         Remove this if you use the .htaccess -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge{{=not request.is_local and ',chrome=1' or ''}}">
-    <!--  Mobile Viewport Fix
-          j.mp/mobileviewport & davidbcalhoun.com/2010/viewport-metatag
-          device-width: Occupy full width of the screen in its current orientation
-          initial-scale = 1.0 retains dimensions instead of zooming out if page height > device height
-          user-scalable = yes allows the user to zoom in -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{=response.title or request.application}}</title>
-    <!-- http://dev.w3.org/html5/markup/meta.name.html -->
-    <meta name="application-name" content="{{=request.application}}">
-    <!-- Speaking of Google, don't forget to set your site up:
-         http://google.com/webmasters -->
-    <meta name="google-site-verification" content="">
-    <!-- include stylesheets -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="{{=URL('static','css/bootstrap.min.css')}}"/>
-    <link rel="stylesheet" href="{{=URL('static','css/web2py-bootstrap4.css')}}"/>
-    <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
-    <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
-    <!-- All JavaScript at the bottom, except for Modernizr which enables
-         HTML5 elements & feature detects -->
-    <script src="{{=URL('static','js/modernizr-2.8.3.min.js')}}"></script>
-    <!-- Favicons -->
-    {{include 'web2py_ajax.html'}} <!-- this includes jquery.js, calendar.js/.css and web2py.js -->
-    {{block head}}{{end}}
-  </head>
-  <body>
-    <div class="w2p_flash alert alert-dismissable">{{=response.flash or ''}}</div>
-    <!-- Navbar ======================================= -->
-    <nav class="navbar navbar-light navbar-expand-md bg-faded bg-dark navbar-dark justify-content-center">
-       <a href="http://web2py.com" class="navbar-brand d-flex w-50 mr-auto">web2py</a>
-       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-         <span class="navbar-toggler-icon"></span>
-       </button>
-       <div class="navbar-collapse collapse w-100" id="navbarNavDropdown">
-         <ul class="navbar-nav w-100 justify-content-center">
-          {{for _item in response.menu or []:}}
-          {{if len(_item)<4 or not _item[3]:}}
-          <li class="nav-item {{if _item[1]:}}active{{pass}}">
-            <a class="nav-link" href="{{=_item[2]}}">{{=_item[0]}}</a>
-          </li>
-          {{else:}}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="{{=_item[2]}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{=_item[0]}}</a>
-            <div class="dropdown-menu">
-              {{for _subitem in _item[3]:}}
-              <a class="dropdown-item" href="{{=_subitem[2]}}">{{=_subitem[0]}}</a>
-              {{pass}}
-            </div>
-          </li>
-          {{pass}}
-          {{pass}}
-        </ul>
-         <form class="form-inline my-2 my-lg-0">
-             <input class="form-control mr-sm-2" type="text" placeholder="Search">
-         </form>
-        {{if 'auth' in globals():}}
-        <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {{if auth.user:}}{{=auth.user.first_name}}{{else:}}LOGIN{{pass}}
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/4.0.0-6/css/ionicons.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.2/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
+        page. However, you can choose any other skin. Make sure you
+        apply the skin class to the body tag so the changes take effect. -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.2/css/skins/skin-blue.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+  <!-- Google Font -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+
+  <!-- web2py stuffs -->
+  <meta name="application-name" content="{{=request.application}}" />
+  <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
+  <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
+  <title>{{=response.title or request.application}}</title>
+  {{include 'web2py_ajax.html'}} <!-- this includes jquery.js, calendar.js/.css and web2py.js -->
+  {{block head}}{{end}}
+
+  <!-- This includes the web2py styles, noticeably the flash banner.
+       However it also brings some visual imperfection to the AdminLTE styles.
+  -->
+  <link rel="stylesheet" href="{{=URL('static','css/web2py-bootstrap3.css')}}"/> <!--
+  Now we need to override the padding and margin defined in app scaffold of web2py 2.14.6
+  --><style>
+  body {padding:0; margin: 0}
+  header {margin:0}
+  </style>
+</head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to get the
+desired effect
+|---------------------------------------------------------|
+| SKINS         | skin-blue                               |
+|               | skin-black                              |
+|               | skin-purple                             |
+|               | skin-yellow                             |
+|               | skin-red                                |
+|               | skin-green                              |
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | fixed                                   |
+|               | layout-boxed                            |
+|               | layout-top-nav                          |
+|               | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="w2p_flash alert alert-dismissable">{{=response.flash or ''}}</div>
+<div class="wrapper">
+
+  <!-- Main Header -->
+  <header class="main-header">
+
+    <!-- Logo -->
+    <a href="{{=URL('default', 'index')}}" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><b>{{=request.application[0].upper()}}</b></span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lg"><b>{{=request.application.title()}}</b></span>
+    </a>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-static-top" role="navigation">
+      <!-- Sidebar toggle button-->
+      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
+      <!-- Navbar Right Menu -->
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+
+          <!-- User Account Menu -->
+          {{if 'auth' in globals() and not auth.user:}}
+            {{=auth.navbar('Welcome',mode='dropdown')}}
+            {{pass}}
+          {{if 'auth' in globals() and auth.user:}}
+          <li class="dropdown user user-menu">
+            <!-- Menu Toggle Button -->
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <!-- The user image in the navbar-->
+              <img src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.2/img/avatar5.png" class="user-image" alt="User Image">
+              <!-- hidden-xs hides the username on small devices so only the image appears. -->
+              <span class="hidden-xs">{{=auth.user.first_name}} {{=auth.user.last_name}}</span>
             </a>
-            <div class="dropdown-menu dropdown-menu-right">
-              {{if auth.user:}}
-              <a class="dropdown-item" href="{{=URL('default','user/profile')}}">{{=T('Profile')}}</a>
-              {{if 'change_password' not in auth.settings.actions_disabled:}}
-              <a class="dropdown-item" href="{{=URL('default','user/change_password')}}">{{=T('Change Password')}}</a>
-              {{pass}}
-              <a class="dropdown-item" href="{{=URL('default','user/logout')}}">{{=T('Logout')}}</a>
-              {{else:}}
-              <a class="dropdown-item" href="{{=URL('default','user/login')}}">{{=T('Login')}}</a>
-              {{if 'register' not in auth.settings.actions_disabled:}}
-              <a class="dropdown-item" href="{{=URL('default','user/register')}}">{{=T('Sign up')}}</a>
-              {{pass}}
-              {{if 'retrieve_password' not in auth.settings.actions_disabled:}}
-              <a class="dropdown-item" href="{{=URL('default','user/retrieve_password')}}">{{=T('Lost Password')}}</a>
-              {{pass}}
-              {{pass}}
-            </div>
+            <ul class="dropdown-menu">
+              <!-- The user image in the menu -->
+              <li class="user-header">
+                <img src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.2/img/avatar5.png" class="img-circle" alt="User Image">
+
+                <p>
+                  {{=auth.user.first_name}} {{=auth.user.last_name}}
+                  <small>{{=auth.user.email}}</small>
+                </p>
+              </li>
+              <!-- Menu Body -->
+              <li class="user-body">
+                <div class="row">
+                  <div class="col-xs-4 text-center">
+                    <a href="{{=URL('default', 'user/change_password', vars={'_next': URL(request.function)})}}">
+                      {{=T('Password')}}</a>
+                  </div>
+                  <!--
+                  <div class="col-xs-4 text-center">
+                    <a href="#">Sales</a>
+                  </div>
+                  <div class="col-xs-4 text-center">
+                    <a href="#">Friends</a>
+                  </div>
+                  -->
+                </div>
+                <!-- /.row -->
+              </li>
+              <!-- Menu Footer-->
+              <li class="user-footer">
+                <div class="pull-left">
+                  <a href="{{=URL('default', 'user/profile', vars={'_next': URL(request.function)})}}"
+                    class="btn btn-default btn-flat">{{=T('Profile')}}</a>
+                </div>
+                <div class="pull-right">
+                  <a href="{{=URL('default', 'user/logout', vars={'_next': URL(request.function)})}}"
+                    class="btn btn-default btn-flat">{{=T('Log out')}}</a>
+                </div>
+              </li>
+            </ul>
           </li>
+          {{pass}}
         </ul>
-        {{pass}}
       </div>
     </nav>
+  </header>
+  <!-- Left side column. contains the logo and sidebar -->
+  <aside class="main-sidebar">
 
-    <!-- Masthead ===================================== -->
-    {{block header}}
-    {{end}}
-    <!-- Main ========================================= -->
-    <!-- Begin page content -->
-    <div class="container-fluid main-container">
-      {{include}}
-      {{=response.toolbar() if response.show_toolbar else ''}}
-    </div>
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
 
-    {{block footer}} <!-- this is default footer -->
-    <footer class="footer container-fluid">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="copyright pull-left">{{=T('Copyright')}} &#169; {{=request.now.year}}</div>
-          <div id="poweredBy" class="pull-right">
-            {{=T('Powered by')}}
-            <a href="http://www.web2py.com/">web2py</a>
-          </div>
+      <!-- Sidebar user panel (optional) -->
+      {{if 'auth' in globals() and auth.user:}}
+      <div class="user-panel">
+        <div class="pull-left image">
+          <img src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.2/img/avatar5.png" class="img-circle" alt="User Image">
+        </div>
+        <div class="pull-left info">
+          <p>{{=auth.user.first_name}} {{=auth.user.last_name}}</p>
+          <!-- Status -->
+          <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
-    </footer>
-    {{end}}
-    <!-- The javascript =============================== -->
-    <script src="{{=URL('static','js/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{=URL('static','js/web2py-bootstrap4.js')}}"></script>
-    {{block page_js}}{{end page_js}}
-    {{if response.google_analytics_id:}}
-    <!-- Analytics ==================================== -->
-    <script src="{{=URL('static','js/analytics.min.js')}}"></script>
-    <script type="text/javascript">
-      analytics.initialize({
-      'Google Analytics':{trackingId:'{{=response.google_analytics_id}}'}
-      });
-    </script>
-    {{pass}}
-  </body>
+      {{pass}}
+
+      <!-- Sidebar Menu -->
+      {{if response.menu:}}
+      {{=MENU(response.menu, _class='sidebar-menu')}} <!-- TODO: Customize MENU(...) to include icons -->
+      {{pass}}
+      <!-- /.sidebar-menu -->
+    </section>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      {{block header}}
+      {{end}}
+    </section>
+
+    <!-- Main content -->
+    <section class="content container">
+
+      <!--------------------------
+        | Your Page Content Here |
+        -------------------------->
+      {{block center}}
+      {{include}}
+      {{end}}
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+
+<!-- REQUIRED JS SCRIPTS -->
+
+<!-- jQuery 3 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="{{=URL('static','js/web2py-bootstrap3.js')}}"></script>
+<!-- AdminLTE App -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.2/js/adminlte.min.js"></script>
+
+<!-- Optionally, you can add Slimscroll and FastClick plugins.
+     Both of these plugins are recommended to enhance the
+     user experience. -->
+</body>
 </html>
