@@ -1,0 +1,103 @@
+{{extend 'layout.html'}}
+
+<style>
+    .cijferlijst {
+        list-style: none;
+    }
+
+    .personalia {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .leerling-foto {
+        max-width: 200px;
+        max-height: 200px;
+    }
+
+    .klasgenoten {
+        list-style: none;
+        padding-left: 0;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="card">
+
+            <div class="card-header">
+                <h2>Leerlingdossier</h2>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-3 col-sm-12">
+                    {{if leerling.foto:}}
+                        <img src="{{=URL('download', args=leerling.foto)}}" alt="" class="leerling-foto">
+                    {{else:}}
+                    {{=IMG(_src=URL('static/images', 'default.png'), _alt="leerling-img", _class="leerling-foto")}}
+                    {{pass}}
+                    </div>
+
+                    <div class="col-md-3">
+                        <h3>Personalia</h3>
+                        <ul class="personalia">
+                            <li>Voornaam: {{=leerling.voornaam}}</li>
+                            <li>Tussenvoegsel: {{=leerling.tussenvoegsel if leerling.tussenvoegsel else 'n.v.t.'}}</li>
+                            <li>Achternaam: {{=leerling.achternaam}}</li>
+                            <li>Geboortedatum: {{=leerling.geboortedatum.strftime('%d-%m-%Y')}}</li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-3 col-sm-12">
+                        <h3>Recente cijfers</h3>
+                    {{if recente_cijfers:}}
+                        <ul class="cijferlijst">
+                        {{for cijfer in recente_cijfers:}}
+                            <li class="cijfer">
+                            {{=cijfer.cijfer}}
+                            </li>
+                        {{pass}}
+                        </ul>
+                        {{else:}}
+                        <p>Geen recente cijfers.</p>
+                    {{pass}}
+                    </div>
+
+                    <div class="col-md-3 col-sm-12">
+                        <h3>Klasgenoten</h3>
+                        <ul class="klasgenoten">
+                        {{for klasgenoot in klasgenoten:}}
+                        {{if not klasgenoot.id == leerling.id:}}
+                            <li class="klasgenoot">
+                                <a href="{{=URL('leerling', args=[klasgenoot.id])}}">
+                                {{=klasgenoot.achternaam}}, {{=klasgenoot.voornaam}}
+                                </a>
+                            </li>
+                        {{pass}}
+                        {{pass}}
+                        </ul>
+                        <a href="" class="btn btn-dark">Alle klasgenoten</a>
+                    </div>
+
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-12 col-sm-12">
+                        <hr>
+                    {{=leerling}}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+

@@ -6,7 +6,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 response.menu = [
-    (T('Home'), False, URL('default', 'index'), [])
+    ("Leerlingen", False, URL('default', 'index'), []),
+    ("Klassen", False, URL('default', 'klassen'), []),
+    ("Vakken", False, URL('default', 'vakken'), []),
+    ("Cijfers", False, URL('default', 'cijfers'), []),
 ]
 
 # ----------------------------------------------------------------------------------------------------------------------
