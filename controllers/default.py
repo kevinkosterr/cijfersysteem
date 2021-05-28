@@ -62,6 +62,23 @@ def vakken():
     return dict(grid=vakken)
 
 
+@auth.requires_login()
+def cijfers_invoeren():
+    if not request.args:
+        return redirect(URL("index"))
+
+    leerling = request.args[0]
+
+    db.cijfer.leerling.default = leerling
+    db.cijfer.leerling.writable = False
+
+    form = SQLFORM(db.cijfer).process()
+
+    if form.accepted:
+        response.flash = "Cijfer ingevoerd."
+
+    return dict(form=form)
+
 
 # ---- Action for login/register/etc (required for auth) -----
 def user():
