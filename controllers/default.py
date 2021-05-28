@@ -1,20 +1,19 @@
-# -*- coding: utf-8 -*-
-# -------------------------------------------------------------------------
-# This is a sample controller
-# this file is released under public domain and you can use without limitations
-# -------------------------------------------------------------------------
-
-# ---- example index page ----
 @auth.requires_login()
 def index():
     links = [
         dict(
             header="Bekijken",
-            body=lambda row: A("Bekijken", _href=URL("leerling", args=[row.id])),
+            body=lambda row: DIV(A("Bekijken", _href=URL("leerling", args=[row.id]), _class='btn btn-default')),
         )
     ]
 
-    leerlingen = SQLFORM.grid(db.leerling, editable=False, details=False, links=links)
+    leerlingen = SQLFORM.grid(
+        db.leerling,
+        details=False,
+        links=links,
+        csv=False,
+        advanced_search=False,
+    )
     return dict(grid=leerlingen)
 
 
@@ -55,7 +54,12 @@ def leerling():
     )
 
 
-# ---- API (example) -----
+@auth.requires_login()
+def klassen():
+    klassen = SQLFORM.smartgrid(db.klas, csv=False, advanced_search=False)
+    return dict(grid=klassen)
+
+
 @auth.requires_login()
 def vakken():
     vakken = SQLFORM.smartgrid(db.vak, csv=False, advanced_search=False)
