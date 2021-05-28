@@ -1,17 +1,77 @@
+"""In deze uitleg ga ik er van uit dat je deze applicatie op je lokale machine draait.
+
+Basis concept:
+
+    Web2py is een Python web framework die gebaseerd is op Model View Controller. Web2py is gericht
+    op Rapid Application Development (RAD).
+
+    Controllers:
+        Dit is de default controller, elke controller die wordt hierin gedefinieerd als een functie.
+        Elke functie is dus een controller. Via een controller kun je data teruggeven aan de view,
+        denk aan bijvoorbeeld een lijst met leerlingen. Dit doe je door het in een dictionary terug te geven,
+        met als sleutel de naam die je de variabele wilt geven en als value de lijst met leerlingen.
+        e.g. return dict(leerlingen=[])
+
+    Views:
+        Elke controller heeft ook een view, deze view moet ook dezelfde naam hebben als de controller.
+        e.g. de index controller moet dus index.html als view hebben. Om deze pagina dus te bezoeken ga je
+        naar https://127.0.0.1:8000/cijfersysteem/default/index. `cijfersysteem` is hier de applicatie, `default`
+        is de controller in de controllers map en `index` is de functie in deze `default` controller.
+
+        Om een variabele in een view aan te roepen, doe je het volgende: {{=leerlingen}}. `=` zorgt ervoor dat
+        de variabele op het scherm wordt laten zien. `leerlingen` is hier de variabele vanuit het voorbeeld van
+        de controller.
+
+    Models:
+        Models worden eigenlijk het meest gebruikt om databases en database tabellen in te definiëren.
+        Het wordt ook gebruikt om bijvoorbeeld handige functies of objecten in te maken. Deze objecten zijn
+        vanaf elke controller beschikbaar om te gebruiken. Om een database te definiëren doe je het volgende:
+
+        database = DAL("sqlite:memory")
+        hier is `database` de naam van de database, dit is een DAL object. "sqlite:memory" is dus een in memory database.
+        andere voorbeelden zijn: "sqlite://storage.sqlite" & "postgres://postgres:postgres@localhost/postgres".
+
+        om een tabel te definiëren doe je het volgende:
+        database.define_table('foo',
+                            Field('bar')
+        )
+        nu heb je een simpele tabel `foo` gemaakt met een veld `bar`.
+"""
+
+
 @auth.requires_login()
 def index():
+    # definiëren van extra links die toegevoegd worden aan het grid.
     links = [
+        # dict() is een dictionary object. dit is dus gelijk aan bijvoorbeeld _dict = {}
         dict(
             header="Bekijken",
-            body=lambda row: DIV(A("Bekijken", _href=URL("leerling", args=[row.id]), _class='btn btn-default')),
+            # https://www.w3schools.com/python/python_lambda.asp
+            body=lambda row: DIV(
+                A(
+                    "Bekijken",  # de tekst die in de link moet verschijnen.
+                    _href=URL(
+                        "leerling", args=[row.id]
+                    ),  # de href attribute van de link.
+                    # hier voegen we html classes toe aan het DIV object.
+                    _class="btn btn-default",
+                )
+            ),
         )
     ]
 
+    # hier maken we een zogenoemde `grid` van een tabel in de database.
+    # in dit geval is dat de leerling tabel uit db.
     leerlingen = SQLFORM.grid(
         db.leerling,
+        # we hoeven geen details te kunnen zien over de leerlingen, hier hebben we een custom controller voor.
         details=False,
+        # links is in dit geval de variabele die we bovenin de controller aangemaakt hebben.
+        # of wel, links is een lijst met extra knoppen/links voor in het grid.
         links=links,
+        # we hoeven de data niet te kunnen exporteren, daarom is dit False.
         csv=False,
+        # advanced_search is onnodig, te gecompliceerd voor een kleine selectie van rows.
         advanced_search=False,
     )
     return dict(grid=leerlingen)
@@ -48,7 +108,7 @@ def leerling():
     # onderstaande regel zegt eigenlijk het volgende:
     # SELECT * FROM leerling WHERE klas == cur_leerling.klas
     # ORDER BY leerling.achternaam LIMIT 0, 5;
-    # cur_leerling is dus het row_object wat op line 36 opgevraagd is.
+    # cur_leerling is dus het row_object wat op line 92 opgevraagd is.
     klasgenoten = db(db.leerling.klas == cur_leerling.klas).select(
         limitby=(0, 5), orderby=db.leerling.achternaam
     )
