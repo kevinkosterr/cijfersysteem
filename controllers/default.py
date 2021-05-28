@@ -70,7 +70,6 @@ def vakken():
 def cijfers_invoeren():
     if not request.args:
         return redirect(URL("index"))
-
     leerling = request.args[0]
 
     db.cijfer.leerling.default = leerling

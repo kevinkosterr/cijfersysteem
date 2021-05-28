@@ -54,7 +54,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 {{block head}}{{end}}
 </head>
 <body class="hold-transition sidebar-mini skin-black">
-<div class="w2p_flash alert alert-dismissable">{{=response.flash or ''}}</div>
 <div class="wrapper">
 
     <!-- Main Header -->
@@ -173,6 +172,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               | Your Page Content Here |
               -------------------------->
         {{block center}}
+            <div class="w2p_flash alert alert-dismissable">{{=response.flash or ''}}</div>
         {{include}}
         {{end}}
 
