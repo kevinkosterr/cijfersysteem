@@ -24,14 +24,34 @@ def leerling():
         redirect(URL("index"))
     leerling_id = request.args[0]
     cur_leerling = db.leerling[leerling_id]
+
     recente_cijfers = db(db.cijfer.leerling == leerling_id).select(
         limitby=(0, 5), orderby=~db.cijfer.ingevoerd_op
     )
     klasgenoten = db(db.leerling.klas == cur_leerling.klas).select(
         limitby=(0, 5), orderby=db.leerling.achternaam
     )
+
+    cijfers = db(db.cijfer.leerling == leerling_id).select(orderby=db.cijfer.vak)
+    cijfers_per_vak = {}
+    for cijfer in cijfers:
+        try:
+            cijfers_per_vak[cijfer.vak.vakcode].append(cijfer.cijfer)
+        except KeyError:
+            cijfers_per_vak[cijfer.vak.vakcode] = []
+            cijfers_per_vak[cijfer.vak.vakcode].append(cijfer.cijfer)
+
+    gemiddelden = {}
+    for vak, cijfers in cijfers_per_vak.items():
+        gemiddelde = sum(cijfers) / len(cijfers)
+        gemiddelden[vak] = round(gemiddelde, 1)
+
     return dict(
-        leerling=cur_leerling, recente_cijfers=recente_cijfers, klasgenoten=klasgenoten
+        leerling=cur_leerling,
+        recente_cijfers=recente_cijfers,
+        klasgenoten=klasgenoten,
+        cijfers=cijfers_per_vak,
+        gemiddelden=gemiddelden,
     )
 
 

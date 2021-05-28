@@ -9,7 +9,6 @@ response.menu = [
     ("Leerlingen", False, URL('default', 'index'), []),
     ("Klassen", False, URL('default', 'klassen'), []),
     ("Vakken", False, URL('default', 'vakken'), []),
-    ("Cijfers", False, URL('default', 'cijfers'), []),
 ]
 
 # ----------------------------------------------------------------------------------------------------------------------

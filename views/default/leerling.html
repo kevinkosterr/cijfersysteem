@@ -3,6 +3,7 @@
 <style>
     .cijferlijst {
         list-style: none;
+        padding-left: 0;
     }
 
     .personalia {
@@ -18,6 +19,20 @@
     .klasgenoten {
         list-style: none;
         padding-left: 0;
+    }
+
+    .cijfer {
+        font-weight: bolder;
+        border: 1px solid black;
+        padding: 4px;
+    }
+
+    .btn-cijfer{
+        margin-top: 10px;
+    }
+
+    .onvoldoende {
+        color: red !important;
     }
 </style>
 
@@ -48,6 +63,8 @@
                             <li>Tussenvoegsel: {{=leerling.tussenvoegsel if leerling.tussenvoegsel else 'n.v.t.'}}</li>
                             <li>Achternaam: {{=leerling.achternaam}}</li>
                             <li>Geboortedatum: {{=leerling.geboortedatum.strftime('%d-%m-%Y')}}</li>
+                            <a href="{{=URL('cijfers_invoeren', args=[leerling.id])}}" class="btn btn-primary btn-cijfer">Cijfer
+                                invoeren</a>
                         </ul>
                     </div>
 
@@ -56,12 +73,12 @@
                     {{if recente_cijfers:}}
                         <ul class="cijferlijst">
                         {{for cijfer in recente_cijfers:}}
-                            <li class="cijfer">
+                            <li>
                             {{=cijfer.cijfer}}
                             </li>
                         {{pass}}
                         </ul>
-                        {{else:}}
+                    {{else:}}
                         <p>Geen recente cijfers.</p>
                     {{pass}}
                     </div>
@@ -89,7 +106,37 @@
 
                     <div class="col-md-12 col-sm-12">
                         <hr>
-                    {{=leerling}}
+                        <h2>Cijferlijst</h2>
+                    {{if cijfers:}}
+                        <ul class="cijferlijst">
+                        {{for vak, cijfer in cijfers.items():}}
+                            <li><h3>{{=vak}} | {{for c in cijfer:}} <span
+                                    class="cijfer {{if c < 5.5:}} onvoldoende {{pass}}">{{=c}}</span> {{pass}}</h3></li>
+                        {{pass}}
+                        </ul>
+                    {{else:}}
+                        <h4>Geen cijfers gevonden voor deze leerling..</h4>
+                    {{pass}}
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-12 col-sm-12">
+                        <hr>
+                        <h2>Gemiddelden</h2>
+                    {{if gemiddelden:}}
+                        <ul class="cijferlijst">
+                        {{for vak, gemiddelde in gemiddelden.items():}}
+                            <li><h3>{{=vak}} | <span
+                                    class="cijfer {{if gemiddelde < 5.5:}} onvoldoende {{pass}}">{{=gemiddelde}}</span>
+                            </h3></li>
+                        {{pass}}
+                        </ul>
+                    {{else:}}
+                        <h4>Voer cijfers in om gemiddelden te zien..</h4>
+                    {{pass}}
                     </div>
 
                 </div>

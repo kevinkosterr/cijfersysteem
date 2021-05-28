@@ -1,5 +1,4 @@
 import datetime
-import os
 
 db.define_table(
     "klas",
@@ -13,11 +12,15 @@ db.define_table(
     "leerling",
     Field("foto", "upload"),
     Field("voornaam", required=True, requires=IS_NOT_EMPTY()),
-    Field("tussenvoegsel", default=None),
+    Field(
+        "tussenvoegsel",
+        default=None,
+        represent=lambda value, row: value if value else "n.v.t.",
+    ),
     Field("achternaam", required=True, requires=IS_NOT_EMPTY()),
     Field("klas", "reference klas", required=True),
     Field("geboortedatum", "date", required=True, requires=IS_NOT_EMPTY()),
-    format=lambda row: f"{row.achternaam}, {row.voornaam}",
+    format=lambda row: f"{row.voornaam} {row.achternaam}",
     plural="Leerlingen",
 )
 
