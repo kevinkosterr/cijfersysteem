@@ -37,15 +37,11 @@ def leerling():
 
 # ---- API (example) -----
 @auth.requires_login()
-def api_get_user_email():
-    if not request.env.request_method == 'GET': raise HTTP(403)
-    return response.json({'status':'success', 'email':auth.user.email})
+def vakken():
+    vakken = SQLFORM.smartgrid(db.vak, csv=False, advanced_search=False)
+    return dict(grid=vakken)
 
 
-# ---- Embedded wiki (example) ----
-def wiki():
-    auth.wikimenu() # add the wiki to the menu
-    return auth.wiki() 
 
 # ---- Action for login/register/etc (required for auth) -----
 def user():
