@@ -3,7 +3,11 @@ import datetime
 db.define_table(
     "klas",
     Field("opleiding", required=True, requires=IS_NOT_EMPTY()),
-    Field("klassencode", required=True, requires=IS_NOT_EMPTY()),
+    Field(
+        "klassencode",
+        required=True,
+        requires=[IS_NOT_EMPTY(), IS_NOT_IN_DB(db, "klas.klassencode")],
+    ),
     format=lambda row: row.klassencode,
     plural="Klassen",
 )
@@ -26,8 +30,10 @@ db.define_table(
 
 db.define_table(
     "vak",
-    Field("naam", requires=IS_NOT_EMPTY()),
-    Field("vakcode", length=2, requires=IS_NOT_EMPTY()),
+    Field("naam", requires=[IS_NOT_EMPTY(), IS_NOT_IN_DB(db, "vak.naam")]),
+    Field(
+        "vakcode", length=2, requires=[IS_NOT_EMPTY(), IS_NOT_IN_DB(db, "vak.vakcode")]
+    ),
     format=lambda row: row.naam,
     plural="Vakken",
 )
