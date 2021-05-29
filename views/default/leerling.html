@@ -27,7 +27,7 @@
         padding: 4px;
     }
 
-    .btn-cijfer{
+    .btn-cijfer {
         margin-top: 10px;
     }
 
@@ -57,13 +57,15 @@
                     </div>
 
                     <div class="col-md-3">
-                        <h3>Personalia</h3>
+                        <h3>Info</h3>
                         <ul class="personalia">
                             <li>Voornaam: {{=leerling.voornaam}}</li>
                             <li>Tussenvoegsel: {{=leerling.tussenvoegsel if leerling.tussenvoegsel else 'n.v.t.'}}</li>
                             <li>Achternaam: {{=leerling.achternaam}}</li>
                             <li>Geboortedatum: {{=leerling.geboortedatum.strftime('%d-%m-%Y')}}</li>
-                            <a href="{{=URL('cijfers_invoeren', args=[leerling.id])}}" class="btn btn-primary btn-cijfer">Cijfer
+                            <li>Klas : {{=leerling.klas.klassencode}}</li>
+                            <a href="{{=URL('cijfers_invoeren', args=[leerling.id])}}"
+                               class="btn btn-primary btn-cijfer">Cijfer
                                 invoeren</a>
                         </ul>
                     </div>
@@ -96,7 +98,8 @@
                         {{pass}}
                         {{pass}}
                         </ul>
-                        <a href="" class="btn btn-dark">Alle klasgenoten</a>
+                        <a href="{{=URL('klas', args=[leerling.klas.id], vars={'came_from': request.function, 'cf_args': leerling.id})}}"
+                           class="btn btn-dark">Alle klasgenoten</a>
                     </div>
 
 

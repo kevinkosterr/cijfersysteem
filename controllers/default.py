@@ -162,8 +162,54 @@ def leerling():
 
 @auth.requires_login()
 def klassen():
-    klassen = SQLFORM.smartgrid(db.klas, csv=False, advanced_search=False)
+    links = [
+        dict(
+            header="Leerlingen",
+            # https://www.w3schools.com/python/python_lambda.asp
+            body=lambda row: DIV(
+                A(
+                    "Leerlingen",  # de tekst die in de link moet verschijnen.
+                    _href=URL(
+                        "klas", args=[row.id], vars=dict(came_from=request.function)
+                    ),
+                    # de href attribute van de link.
+                    # hier voegen we html classes toe aan het DIV object.
+                    _class="btn btn-default",
+                )
+            ),
+        )
+    ]
+
+    klassen = SQLFORM.grid(
+        db.klas, links=links, details=False, csv=False, advanced_search=False
+    )
     return dict(grid=klassen)
+
+
+@auth.requires_login()
+def klas():
+    if not request.args:
+        return redirect(URL("index"))
+
+    klas_id = request.args[0]
+    if not klas_id:
+        return "Geen klas opgegeven."
+    if not request.vars["came_from"]:
+        came_from = "index"
+        cf_args = None
+    else:
+        came_from = request.vars.get("came_from")
+        cf_args = request.vars.get("cf_args", None)
+
+    klas_row = db.klas[klas_id]
+    leerlingen = klas_row.leerling.select()
+
+    return dict(
+        klas_row=klas_row,
+        leerlingen=leerlingen,
+        came_from=came_from,
+        cf_args=cf_args,
+    )
 
 
 @auth.requires_login()

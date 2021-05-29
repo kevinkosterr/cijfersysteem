@@ -1,0 +1,63 @@
+{{extend "layout.html"}}
+
+<style>
+    .leerling-foto {
+        max-height: 30px;
+        max-width: 30px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="card">
+
+            <a href="{{=URL(came_from, args=cf_args)}}" class="btn btn-default">Terug</a>
+            <div class="card-header">
+                <h2>{{=klas_row.opleiding}} : {{=klas_row.klassencode}}</h2>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-12 col-sm-12">
+                    <h4>Leerlingen</h4>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th> #</th>
+                            <th>Voornaam</th>
+                            <th>Tussenvoegsel</th>
+                            <th>Achternaam</th>
+                            <th>Geboortedatum</th>
+                            <th>Klas</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{for leerling in leerlingen:}}
+                        <tr>
+                        {{if leerling.foto:}}
+                            <td><img src="{{=URL('download', args=leerling.foto)}}" alt="" class="leerling-foto"></td>
+                        {{else:}}
+                            <td>{{=IMG(_src=URL('static/images', 'default.png'), _alt="leerling-img", _class="leerling-foto")}}</td>
+                        {{pass}}
+                            <td>{{=leerling.voornaam}}</td>
+                            <td>{{=leerling.tussenvoegsel if leerling.tussenvoegsel else '-'}}</td>
+                            <td>{{=leerling.achternaam}}</td>
+                            <td>{{=leerling.geboortedatum}}</td>
+                            <td>{{=leerling.klas.klassencode}}</td>
+                        </tr>
+                        {{pass}}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+</div>
