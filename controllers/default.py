@@ -235,6 +235,37 @@ def cijfers_invoeren():
     return dict(form=form)
 
 
+@auth.requires_login()
+def cijfers_aanpassen():
+    if not request.vars:
+        return redirect(URL("index"))
+
+    leerling_id = request.vars.get("leerling", None)
+    if not leerling_id:
+        return "Geen leerling opgegeven."
+    came_from = request.vars.get("came_from", None)
+
+    # het id van dit record hoeft niet te zien te zijn
+    db.cijfer.id.readable = False
+    # de leerling van dit record mag niet aangepast worden.
+    db.cijfer.leerling.writable = False
+    # het vak van dit record mag niet aangepast worden.
+    db.cijfer.vak.writable = False
+
+    query = db.cijfer.leerling == leerling_id
+
+    grid = SQLFORM.smartgrid(
+        db.cijfer,
+        constraints=dict(cijfer=query),
+        details=False,
+        create=False,
+        searchable=False,
+        csv=False,
+    )
+
+    return dict(grid=grid, came_from=came_from if came_from else 'index')
+
+
 # ---- Action for login/register/etc (required for auth) -----
 def user():
     """

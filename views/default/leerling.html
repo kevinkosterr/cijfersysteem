@@ -67,6 +67,8 @@
                             <a href="{{=URL('cijfers_invoeren', args=[leerling.id])}}"
                                class="btn btn-primary btn-cijfer">Cijfer
                                 invoeren</a>
+                            <a href="{{=URL('cijfers_aanpassen', vars=dict(leerling=leerling.id, came_from=request.function))}}"
+                               class="btn btn-cijfer btn-warning">Cijfers aanpassen</a>
                         </ul>
                     </div>
 
