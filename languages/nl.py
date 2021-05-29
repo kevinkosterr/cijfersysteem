@@ -106,6 +106,7 @@
 'Download': 'Download',
 'E-mail': 'E-mail',
 'Edit': 'Edit',
+'Edit %(entity)s': 'Edit %(entity)s',
 'Edit current record': 'Bewerk huidig record',
 'Email and SMS': 'E-mail en SMS',
 'Email sent': 'Email sent',

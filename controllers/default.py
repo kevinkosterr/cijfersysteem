@@ -36,20 +36,38 @@ Basis concept:
                             Field('bar')
         )
         nu heb je een simpele tabel `foo` gemaakt met een veld `bar`.
+
+    Request.args & request.vars:
+        https://127.0.0.1:8000/cijfersysteem/default/index/1/2?message=hello
+        applicatie: cijfersysteem
+        controller: default
+        functie: index
+        request.args[0]: 1
+        request.args[1]: 2
+        request.vars.get('message') of request.vars['message']: hello
+
+
 """
 
 
 @auth.requires_login()
 def index():
+    """Controller voor het overzicht van leerlingen.
+    De grid zorgt ervoor dat er ook gelijk nieuwe leerlingen toegevoegd kunnen worden, verwijderd kunnen worden
+    en bewerkt kunnen worden.
+
+    :return: grid van leerlingen.
+    """
+
     # definiëren van extra links die toegevoegd worden aan het grid.
     links = [
         # dict() is een dictionary object. dit is dus gelijk aan bijvoorbeeld _dict = {}
         dict(
-            header="Bekijken",
+            header="Dossier",
             # https://www.w3schools.com/python/python_lambda.asp
             body=lambda row: DIV(
                 A(
-                    "Bekijken",  # de tekst die in de link moet verschijnen.
+                    "Dossier bekijken",  # de tekst die in de link moet verschijnen.
                     _href=URL(
                         "leerling", args=[row.id]
                     ),  # de href attribute van de link.
@@ -79,6 +97,10 @@ def index():
 
 @auth.requires_login()
 def leerling():
+    """Controller voor een leerlingdossier.
+
+    :return: leerling row met recente cijfers, gemiddelde cijfers en cijfers per vak.
+    """
     if not request.args:
         # als er geen argument is meegegeven in de URL, dan redirecten we de gebruiker naar
         # de index pagina.
@@ -162,6 +184,11 @@ def leerling():
 
 @auth.requires_login()
 def klassen():
+    """Controller voor het laten zien van alle klassen in de database.
+    De grid zorgt ervoor dat je ook gelijk een klas kunt toevoegen, verwijderen of bewerken.
+
+    :return: grid van alle klassen.
+    """
     links = [
         dict(
             header="Leerlingen",
@@ -171,8 +198,7 @@ def klassen():
                     "Leerlingen",  # de tekst die in de link moet verschijnen.
                     _href=URL(
                         "klas", args=[row.id], vars=dict(came_from=request.function)
-                    ),
-                    # de href attribute van de link.
+                    ),  # de href attribute van de link.
                     # hier voegen we html classes toe aan het DIV object.
                     _class="btn btn-default",
                 )
@@ -188,20 +214,44 @@ def klassen():
 
 @auth.requires_login()
 def klas():
+    """
+    Controller voor het laten zien van alle leerlingen in een klas.
+
+    :return: klas row & leerlingen in de klas
+    """
+
     if not request.args:
+        # als er geen argumenten meegegeven zijn in de URL
+        # dan redirecten we de gebruiker naar de index.
         return redirect(URL("index"))
 
     klas_id = request.args[0]
     if not klas_id:
+        # als er geen klas_id is, laat dan verder ook niets zien behalve
+        # dat er geen klas opgegeven is.
         return "Geen klas opgegeven."
+
+    # came_from is in dit geval de controller/pagina waar de
+    # 'terug' knop op de klas.html pagina naar toe gaat.
     if not request.vars["came_from"]:
+        # gezien er geen came_from meegegeven is, brengt de 'terug'
+        # knop je gewoon terug naar de index pagina.
         came_from = "index"
+        # in dit geval zijn er dus ook geen cf_args (came_from_args)
         cf_args = None
     else:
         came_from = request.vars.get("came_from")
+        # sommige controllers hebben argumenten nodig om juist te functioneren
+        # en terug te gaan naar de juiste pagina. mocht dit niet nodig zijn, dan hoeven
+        # we ook geen cf_args mee te geven in de URL.
         cf_args = request.vars.get("cf_args", None)
 
+    # haal de `klas` row op uit de database die matcht met
+    # het klas_id wat uit de request.args is opgehaald.
     klas_row = db.klas[klas_id]
+    # klas_row.leerling geeft een Set object terug van alle leerlingen
+    # die in deze klas_row zitten, of wel alle leerlingen die in deze
+    # klas zitten. we voeren .select() uit om de daadwerkelijk rows te selecteren.
     leerlingen = klas_row.leerling.select()
 
     return dict(
@@ -214,6 +264,16 @@ def klas():
 
 @auth.requires_login()
 def vakken():
+    """
+    Controller voor het laten zien van alle vakken die aanwezig zijn in de database.
+    De smartgrid geeft het ook de mogelijkheid om hier extra vakken aan toe te voegen, vakken te verwijderen en
+    om vakken te bewerken.
+
+    :return: smartgrid van vakken.
+    """
+
+    # een simpele smartgrid/overzicht van alle vakken die in de database staan.
+    # http://www.web2py.com/books/default/chapter/29/07/forms-and-validators?search=smartgrid#SQLFORM-smartgrid
     vakken = SQLFORM.smartgrid(db.vak, csv=False, advanced_search=False)
     return dict(grid=vakken)
 
@@ -221,15 +281,25 @@ def vakken():
 @auth.requires_login()
 def cijfers_invoeren():
     if not request.args:
+        # we verplichten de gebruiker om variabelen in de URL te hebben
+        # staan deze niet in de URL? redirect dan naar de index.
         return redirect(URL("index"))
-    leerling = request.args[0]
 
-    db.cijfer.leerling.default = leerling
+    # e.g. https://127.0.0.1/cijfersysteem/default/cijfers_invoeren/1, leerling_id is dan 1
+    leerling_id = request.args[0]
+
+    # de default value van het leerling veld voor dit cijfer is de leerling_id
+    db.cijfer.leerling.default = leerling_id
+    # de gebruiker mag vanuit het formulier de leerling niet aanpassen.
     db.cijfer.leerling.writable = False
 
+    # formulier op basis van de tabel `cijfer` in database `db`.
+    # .process() zorgt er voor dat de data ingevoerd wordt in de database.
     form = SQLFORM(db.cijfer).process()
 
     if form.accepted:
+        # als er geen fouten zitten in het formulier, laat deze dan
+        # records invoeren in de database en laat een bericht zien aan de gebruiker.
         response.flash = "Cijfer ingevoerd."
 
     return dict(form=form)
@@ -237,25 +307,36 @@ def cijfers_invoeren():
 
 @auth.requires_login()
 def cijfers_aanpassen():
+    """Controller voor het aanpassen van een cijfer.
+
+    :return: grid van cijfers van een leerling
+    """
     if not request.vars:
+        # we verplichten de gebruiker om variabelen in de URL te hebben
+        # staan deze niet in de URL? redirect dan naar de index.
         return redirect(URL("index"))
 
+    # dit moet altijd een integer zijn.
     leerling_id = request.vars.get("leerling", None)
     if not leerling_id:
+        # als er geen leerling is opgegeven, dan laten we alleen een bericht zien.
         return "Geen leerling opgegeven."
     came_from = request.vars.get("came_from", None)
 
-    # het id van dit record hoeft niet te zien te zijn
+    # het id van dit record hoeft niet te lezen te zijn
     db.cijfer.id.readable = False
     # de leerling van dit record mag niet aangepast worden.
     db.cijfer.leerling.writable = False
     # het vak van dit record mag niet aangepast worden.
     db.cijfer.vak.writable = False
 
+    # WHERE cijfer.leerling == leerling_id
     query = db.cijfer.leerling == leerling_id
 
     grid = SQLFORM.smartgrid(
         db.cijfer,
+        # constraints zorgt ervoor dat er alleen maar cijfers worden
+        # laten zien die aan de query voldoen.
         constraints=dict(cijfer=query),
         details=False,
         create=False,
@@ -263,7 +344,7 @@ def cijfers_aanpassen():
         csv=False,
     )
 
-    return dict(grid=grid, came_from=came_from if came_from else 'index')
+    return dict(grid=grid, came_from=came_from if came_from else "index")
 
 
 # ---- Action for login/register/etc (required for auth) -----
