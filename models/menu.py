@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 response.menu = [
+    # linkjes voor in de navigatiebalk.
     ("Leerlingen", False, URL('default', 'index'), []),
     ("Klassen", False, URL('default', 'klassen'), []),
     ("Vakken", False, URL('default', 'vakken'), []),
